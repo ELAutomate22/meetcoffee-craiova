@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   MeetCoffee — sistem de design
+   Tailwind v4: tokenurile de mai jos generează automat clase utilitare
+   (bg-espresso, text-crema, font-display etc.).
+   ========================================================================== */
+
+@theme {
+  /* --- Culori -------------------------------------------------------- */
+  --color-void: #0b0605; /* cel mai adânc negru cafea */
+  --color-espresso: #160e0a; /* fundal principal */
+  --color-roast: #24150f; /* suprafețe ridicate */
+  --color-bark: #32201a; /* borduri calde, carduri */
+  --color-crema: #d6a56c; /* accent principal */
+  --color-copper: #b96d3a; /* accent secundar */
+  --color-ivory: #f3ebdd; /* text principal */
+  --color-taupe: #8d7667; /* decorativ, nu pentru text mic */
+  --color-muted: #b5a294; /* text secundar — contrast ridicat pe espresso */
+
+  /* --- Tipografie ---------------------------------------------------- */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  /* --- Ritm și formă ------------------------------------------------- */
+  --radius-card: 1.25rem;
+  --radius-pill: 999px;
+
+  /* --- Mișcare ------------------------------------------------------- */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-heavy: cubic-bezier(0.55, 0, 0.85, 0.35);
+}
+
+/* ==========================================================================
+   Bază
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Ancorele nu trebuie să ajungă sub bara fixă. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-espresso);
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Blochează derularea cât timp rulează introducerea. */
+  body[data-intro-locked="true"] {
+    overflow: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Focus vizibil, consistent, pe toate elementele interactive. */
+  :focus-visible {
+    outline: 2px solid var(--color-crema);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-copper);
+    color: var(--color-ivory);
+  }
+
+  /* Bară de derulare discretă, în tonul temei. */
+  * {
+    scrollbar-color: var(--color-bark) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* ==========================================================================
+   Utilitare proprii
+   ========================================================================== */
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 78rem;
+  padding-inline: 1.25rem;
+
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Titlu mic de secțiune, cu spațiere largă. */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-crema);
+  font-weight: 600;
+}
+
+/* Muchie fină, caldă — folosită în locul umbrelor dure. */
+@utility hairline {
+  border: 1px solid color-mix(in oklab, var(--color-ivory) 10%, transparent);
+}
+
+/* Fundal de card, ușor ridicat față de pagină. */
+@utility surface {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--color-roast) 92%, transparent),
+    color-mix(in oklab, var(--color-espresso) 96%, transparent)
+  );
+}
+
+/* ==========================================================================
+   Revelare la derulare
+   Elementele sunt ascunse doar dacă JavaScript rulează; fără JS rămân
+   vizibile, deci site-ul este complet lizibil oricum.
+   ========================================================================== */
+
+html[data-js="true"] [data-reveal] {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity 0.9s var(--ease-out-soft),
+    transform 0.9s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+html[data-js="true"] [data-reveal][data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Apariția în cascadă a produselor la schimbarea categoriei din meniu. */
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Mișcare redusă — respectă setarea din sistemul de operare
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html[data-js="true"] [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
