@@ -1,0 +1,22 @@
+# Configurație de publicare pentru Netlify.
+#
+# Netlify recunoaște Next.js și instalează singur runtime-ul necesar
+# (@netlify/plugin-nextjs). Toate rutele acestui site sunt generate static la
+# build, deci nu este nevoie de funcții server sau de variabile de mediu.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Next.js 16 cere Node 20.9+. Fixăm versiunea ca build-ul să nu se schimbe
+  # sub noi când Netlify își actualizează versiunea implicită.
+  NODE_VERSION = "20"
+
+# Imaginile derivate din cadrul-sursă și fotografiile din galerie nu se schimbă
+# de la un deploy la altul decât dacă sunt înlocuite intenționat, deci pot fi
+# păstrate în cache de browser pe termen lung.
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
