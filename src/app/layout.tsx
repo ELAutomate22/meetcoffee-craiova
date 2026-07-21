@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import { site } from "@/data/site";
+import { isProductionDomain } from "@/lib/deployment";
+
+/** Se evaluează o singură dată, la build. */
+const indexable = isProductionDomain();
 
 /**
  * Serifă editorială pentru titluri. `latin-ext` este obligatoriu:
@@ -60,11 +64,21 @@ export const metadata: Metadata = {
     description: "Cafea de specialitate preparată atent, în centrul Craiovei.",
     images: ["/images/intro/intro-fallback.webp"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
+  /*
+    Pe domeniul real permitem indexarea. Pe adresele temporare de publicare
+    trimitem `noindex`, pentru că acolo prețurile din meniu sunt încă date
+    orientative, neconfirmate de proprietar.
+
+    Eticheta `meta` este semnalul decisiv: o pagină blocată doar din robots.txt
+    poate ajunge oricum în rezultate dacă cineva pune un link către ea.
+  */
+  robots: indexable
+    ? {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true, "max-image-preview": "large" },
+      }
+    : { index: false, follow: false, googleBot: { index: false, follow: false } },
 };
 
 export const viewport: Viewport = {

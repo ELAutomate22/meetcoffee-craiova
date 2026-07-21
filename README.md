@@ -208,6 +208,34 @@ folosită pentru adresa canonică, `sitemap.xml`, `robots.txt` și metadatele de
 partajare pe rețele sociale — dacă rămâne greșită, previzualizările vor arăta
 un domeniu inexistent.
 
+## Publicare pe Netlify
+
+Fișierul `netlify.toml` este deja configurat (comandă de build, Node 20, cache
+pentru imagini). Netlify recunoaște Next.js și instalează singur runtime-ul.
+
+1. În Netlify: **Add new site → Import an existing project → GitHub**.
+2. Alege depozitul `meetcoffee-craiova`.
+3. Setările de build sunt citite din `netlify.toml` — nu modifica nimic.
+4. **Deploy**. Fiecare `git push` pe `main` declanșează o publicare nouă.
+
+### Indexarea pe adresele temporare
+
+Cât timp site-ul rulează pe o adresă temporară (`*.netlify.app`,
+`*.vercel.app` sau o previzualizare de ramură), **nu este indexat de Google**:
+`robots.txt` returnează `Disallow: /`, iar paginile conțin
+`<meta name="robots" content="noindex, nofollow">`.
+
+Motivul: prețurile din meniu sunt încă date orientative, neconfirmate de
+proprietar, iar o adresă temporară indexată ar însemna și conținut duplicat în
+rezultatele căutării.
+
+Comutarea este automată și se face după domeniu. Când site-ul ajunge să ruleze
+pe adresa reală din `site.url`, indexarea se activează singură — nu trebuie
+schimbat niciun cod. **Deci actualizează `site.url` cu domeniul real înainte de
+lansare, altfel site-ul va rămâne neindexat.**
+
+Logica este în `src/lib/deployment.ts`.
+
 ### Alte platforme
 
 Proiectul este un Next.js standard, fără server propriu, deci funcționează pe
